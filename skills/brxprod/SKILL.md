@@ -43,17 +43,17 @@ Reach for BRXProd abilities only for these:
 
 | ability | for |
 |---|---|
-| `bricks-productivity/get-brxprod-context` | which token framework this site runs, and what BRXProd has installed — **call this first** |
-| `bricks-productivity/find-style-guide` | locate the plugin-managed Style Guide page |
-| `bricks-productivity/list-snippets`, `install-snippet` | install a bundled snippet into Fluent Snippets |
-| `bricks-productivity/get-diagnostics` | server / WP / plugin diagnostics for support |
+| `brxprod/get-context` | which token framework this site runs, and what BRXProd has installed — **call this first** |
+| `brxprod/find-style-guide` | locate the plugin-managed Style Guide page |
+| `brxprod/list-snippets`, `install-snippet` | install a bundled snippet into Fluent Snippets |
+| `brxprod/get-diagnostics` | server / WP / plugin diagnostics for support |
 
 Each group is behind its own switch in **Settings → AI Tools → WordPress
 Abilities**, all off by default except reads.
 
 **If an ability you expect is missing, it is almost certainly switched off
 rather than broken** — an unregistered ability and a nonexistent one look
-identical from outside. `get-brxprod-context` reports the group state: anything
+identical from outside. `get-context` reports the group state: anything
 it lists under `abilityGroups.unavailable` is off, and it names the switch. Tell
 the user which one to turn on; do not work around it, and do not report a fault.
 
@@ -76,7 +76,7 @@ different variable name in each**. Guessing produces CSS that references a
 variable that does not exist, which resolves to nothing: the declaration is
 dropped, no error is raised, and the spacing or colour is simply absent.
 
-**`bricks-productivity/get-brxprod-context` answers this in one call** — it
+**`brxprod/get-context` answers this in one call** — it
 reports the detected framework, the variable prefix actually in force, and what
 BRXProd has installed. Prefer it over inferring the answer yourself.
 
@@ -123,7 +123,7 @@ variables.
 Three things to know before using them:
 
 - **Check they exist on this site.** All of it is opt-in — installed by Process
-  or the "Add BRXProd features" button. `get-brxprod-context` reports which of
+  or the "Add BRXProd features" button. `get-context` reports which of
   the three class categories are installed and lists their class names, so there
   is no need to assume.
 - **The two corner families work differently.** Outset paints its fillet with a
@@ -142,7 +142,7 @@ change, not a site change.
 
 ## Rule 5: the managed Style Guide page
 
-`bricks-productivity/find-style-guide` locates it — it is identified by a marker
+`brxprod/find-style-guide` locates it — it is identified by a marker
 in post meta, not by its title, so searching for a page called "Style Guide" is
 not the same question.
 

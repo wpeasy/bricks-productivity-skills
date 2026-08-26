@@ -70,7 +70,7 @@ Both skills assume the site can actually reach the abilities:
 - **Bricks 2.4+** for Bricks' own abilities, which the skill delegates to.
 
 If an ability a skill mentions is missing, its group is switched off. That is
-the intended behaviour, not a fault — `brxprod/get-brxprod-context` reports which
+the intended behaviour, not a fault — `brxprod/get-context` reports which
 groups are on, so an agent can name the switch rather than report a bug.
 
 ## Contributing

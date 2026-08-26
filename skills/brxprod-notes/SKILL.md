@@ -28,12 +28,12 @@ was needed, so you do not have to guess the shape.
 
 | ability | notes |
 |---|---|
-| `bricks-productivity/list-notes` | read one location, grouped by group id |
-| `bricks-productivity/create-note` | `location` + `label`, optional `body`, `groupId`, `done` |
-| `bricks-productivity/update-note` | `noteId` + only the fields to change |
-| `bricks-productivity/delete-note` | `noteId`. Permanent |
-| `bricks-productivity/list-note-groups` | the site-wide group registry |
-| `bricks-productivity/save-note-groups` | replace that registry. Administrators only |
+| `brxprod/list-notes` | read one location, grouped by group id |
+| `brxprod/create-note` | `location` + `label`, optional `body`, `groupId`, `done` |
+| `brxprod/update-note` | `noteId` + only the fields to change |
+| `brxprod/delete-note` | `noteId`. Permanent |
+| `brxprod/list-note-groups` | the site-wide group registry |
+| `brxprod/save-note-groups` | replace that registry. Administrators only |
 
 ## How to work with them
 
@@ -76,7 +76,7 @@ Abilities → Notes**, off by default, and Notes is a **Pro** feature — so on 
 free licence the switch cannot enable them.
 
 An unregistered ability and a nonexistent one look identical from outside, so do
-not conclude the plugin is broken. `bricks-productivity/get-brxprod-context`
+not conclude the plugin is broken. `brxprod/get-context`
 reports the group state: anything under `abilityGroups.unavailable` is switched
 off, and it distinguishes "off" from "needs Pro". Tell the user which it is.
 
