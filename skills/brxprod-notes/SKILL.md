@@ -29,7 +29,7 @@ was needed, so you do not have to guess the shape.
 | ability | notes |
 |---|---|
 | `brxprod/list-notes` | read one location, grouped by group id |
-| `brxprod/create-note` | `location` + `label`, optional `body`, `groupId`, `done` |
+| `brxprod/create-note` | `location` + `label`, optional `body`, `groupId`, `done`, `format` |
 | `brxprod/update-note` | `noteId` + only the fields to change |
 | `brxprod/delete-note` | `noteId`. Permanent |
 | `brxprod/list-note-groups` | the site-wide group registry |
@@ -49,6 +49,21 @@ through this route that you could not reach through its own location.
 `{noteId, done: true}` and nothing else; the label, body, colour and group are
 untouched. Do not read a note, modify it, and send the whole thing back — that
 is how a note's text gets clobbered by a stale copy.
+
+**A note body containing HTML needs `format: "rich"`.** The default is
+`plain`, which is correct for ordinary text and preserves line breaks — but it
+escapes markup, so a body written as HTML is shown to the reader as its own
+tags. This is not auto-detected, deliberately: a note legitimately reading
+"keep this under < 500px" would be misread as markup, and only the caller knows
+which was meant.
+
+Rich bodies are still filtered (`wp_kses_post`), so scripts and event handlers
+are stripped whatever you send. Ordinary formatting — paragraphs, lists, links,
+bold — survives.
+
+**An existing note can be promoted**: `{noteId, format: "rich"}` alone, no body
+needed. That is the fix if a note was already added as HTML and is displaying
+its tags.
 
 **Prefer marking a note done over deleting it.** Deletion is permanent, and the
 body is *not* recoverable from the audit log, which stores only the label. When
