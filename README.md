@@ -31,40 +31,53 @@ before writing anything; the rest covers only what the plugin adds.
 
 | skill | covers |
 |---|---|
-| [`bricks-productivity`](skills/bricks-productivity/SKILL.md) | delegating to Bricks; identifying which token framework a site runs; BRXProd rails, corner and utility classes; the managed Style Guide page; builder notes; bundled snippets |
+| [`brxprod`](skills/brxprod/SKILL.md) | delegating to Bricks; identifying which token framework a site runs; BRXProd rails, corner and utility classes; the managed Style Guide page; bundled snippets |
+| [`brxprod-notes`](skills/brxprod-notes/SKILL.md) | builder notes — reading, adding, editing, ticking off and deleting them at site, page, element or personal scope, and managing note groups |
+
+**Why two and not one.** Notes is the only part of this plugin that Bricks has no
+equivalent for, so it needs none of the "defer to Bricks' own abilities" material
+that dominates the other file — which makes it genuinely self-contained rather
+than a slice with ragged edges. Splitting there also sharpens both skills'
+descriptions, and a skill is matched to a task by its description, so a vague one
+loads less reliably. Everything else is one job — building and styling on a
+BRXProd site — and stays together.
 
 ## Installing
 
-Copy the skill folder into wherever your agent loads skills from. For Claude
+Copy the skill folders into wherever your agent loads skills from. For Claude
 Code, that is `.claude/skills/` in a project or `~/.claude/skills/` globally:
 
 ```bash
 git clone https://github.com/wpeasy/bricks-productivity-skills.git
-cp -r bricks-productivity-skills/skills/bricks-productivity ~/.claude/skills/
+cp -r bricks-productivity-skills/skills/* ~/.claude/skills/
 ```
 
-Or read `SKILL.md` directly and paste the parts you need — it is written to be
-useful either way.
+Take just one if that is all you need — they do not depend on each other.
+
+Or read either `SKILL.md` directly and paste the parts you need — they are
+written to be useful that way too.
 
 ## Requirements
 
-The skill assumes the site can actually reach the abilities:
+Both skills assume the site can actually reach the abilities:
 
 - **WordPress 6.9+** — where the Abilities API landed in core. On older
   WordPress the plugin registers nothing.
 - **Bricks Productivity**, with **Settings → AI Tools → WordPress Abilities**
-  turned on. It ships **off**, and each group under it (reads, page writes,
-  snippet install, notes) is its own switch. Reads are on by default; every
-  write group has to be enabled deliberately.
+  turned on. It ships **off**, and each group under it (reads, snippet
+  install, notes) is its own switch. Reads are on by default; snippet install
+  and notes each have to be enabled deliberately, and notes needs Pro.
 - **Bricks 2.4+** for Bricks' own abilities, which the skill delegates to.
 
-If an ability the skill mentions is missing, the group is switched off. That is
-the intended behaviour, not a fault.
+If an ability a skill mentions is missing, its group is switched off. That is
+the intended behaviour, not a fault — `brxprod/get-brxprod-context` reports which
+groups are on, so an agent can name the switch rather than report a bug.
 
 ## Contributing
 
 Corrections welcome, particularly anywhere a skill says something that is no
-longer true of the current plugin or Bricks release. Please cite what you
+longer true of the current plugin or Bricks release. The skills name abilities
+directly, so they need updating whenever that surface changes. Please cite what you
 checked — these files are meant to be grounded in observed behaviour rather than
 assumption, and a plausible-sounding correction that nobody verified is the
 failure mode they exist to avoid.

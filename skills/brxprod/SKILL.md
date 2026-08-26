@@ -1,6 +1,6 @@
 ---
-name: bricks-productivity
-description: House standards for working on a Bricks site running the Bricks Productivity plugin (BRXProd). Use when asked to work on such a site — building or editing pages, using design tokens, applying BRXProd rails/corner/utility classes, editing the Style Guide, reading or writing builder notes, or installing bundled snippets. Says what to delegate to Bricks' own abilities and what is genuinely this plugin's.
+name: brxprod
+description: House standards for building and styling on a Bricks site running the Bricks Productivity plugin (BRXProd). Use when writing CSS or applying classes on such a site, identifying which token framework it uses, applying BRXProd rails/corner/utility classes, working with the Style Guide page, or installing bundled snippets. Says what to delegate to Bricks' own abilities and what is genuinely this plugin's. For builder notes, use the brxprod-notes skill.
 ---
 
 # Working on a BRXProd site
@@ -45,8 +45,6 @@ Reach for BRXProd abilities only for these:
 |---|---|
 | `bricks-productivity/get-brxprod-context` | which token framework this site runs, and what BRXProd has installed — **call this first** |
 | `bricks-productivity/find-style-guide` | locate the plugin-managed Style Guide page |
-| `bricks-productivity/list-notes`, `create-note`, `update-note`, `delete-note` | builder notes at site / page / element / user scope |
-| `bricks-productivity/list-note-groups`, `save-note-groups` | the note group registry |
 | `bricks-productivity/list-snippets`, `install-snippet` | install a bundled snippet into Fluent Snippets |
 | `bricks-productivity/get-diagnostics` | server / WP / plugin diagnostics for support |
 
@@ -65,6 +63,11 @@ on a free licence its switch cannot help.
 
 There is no BRXProd ability that writes page content. That is not an oversight;
 use Bricks'.
+
+**Builder notes are a separate skill** — `brxprod-notes`. Six more abilities sit
+behind it (`list-notes`, `create-note`, `update-note`, `delete-note`,
+`list-note-groups`, `save-note-groups`). Nothing in this file is needed to use
+them: Bricks has no notes feature, so none of the delegation rules apply there.
 
 ## Rule 3: establish which framework is in play before naming a token
 
@@ -152,23 +155,7 @@ hand-edits to those are replaced on the next *Update Style Guide Page*. The
 supported workflow is to tune in the builder, then fold the change back into the
 plugin's variant template. Edits to your own content on that page are safe.
 
-## Rule 6: notes
-
-Builder notes exist at four locations — `site`, `page`, `element`, `user` —
-addressed by a `location` object. `postId` is required for page and element;
-`elementId` for element; `userId` only when naming someone other than yourself.
-
-- **Call `list-note-groups` before creating a note** and pick a real `groupId`,
-  or it lands in `g_default`.
-- **`update-note` and `delete-note` take a `noteId` only** — the location is
-  resolved for you. Only the fields you send are changed, so ticking a note off
-  is `{noteId, done: true}` and nothing else.
-- **Prefer marking a note done over deleting it.** Deletion is permanent and the
-  note body is not recoverable from the audit log, which stores only the label.
-- Site notes are readable by editors but writable only by administrators. If a
-  write is refused, that is the permission model, not a bug.
-
-## Rule 7: snippets
+## Rule 6: snippets
 
 `install-snippet` installs one of the **plugin's own bundled snippets** into
 Fluent Snippets, as a **draft**, in the BRXProd group. It cannot install
@@ -177,7 +164,7 @@ arbitrary code — the source is read server-side by id.
 Tell the user it landed as a draft and needs activating. It requires
 `unfiltered_html`, and the whole snippets group is off by default.
 
-## Rule 8: say what you did not verify
+## Rule 7: say what you did not verify
 
 None of these abilities render a page. A write response is not proof the result
 looks right — Bricks' own guidance says the same, and it matters more here
