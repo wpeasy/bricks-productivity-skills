@@ -31,10 +31,11 @@ a second-hand account of it from anywhere, including this file:
 Its save pipeline is journaled, idempotent and resumable, and it validates what
 you send. Hand-building content and pushing it some other way loses all of that.
 
-**BRXProd's own `get-design-tokens`, `get-typography`, `create-page` and
-`update-page` predate that layer and overlap it.** Prefer the Bricks ability in
-every case above. The one exception is `update-page`, which is deliberately
-scoped to the managed Style Guide page (see below).
+**BRXProd used to expose `get-design-tokens`, `get-typography`, `create-page` and
+`update-page`. They have been removed** — each duplicated the Bricks ability less
+capably, and two tools that disagree about the same site is worse than one
+because you cannot tell which is authoritative. If you find them on an older
+install, do not use them.
 
 ## Rule 2: what this plugin actually adds
 
@@ -42,6 +43,7 @@ Reach for BRXProd abilities only for these:
 
 | ability | for |
 |---|---|
+| `bricks-productivity/get-brxprod-context` | which token framework this site runs, and what BRXProd has installed — **call this first** |
 | `bricks-productivity/find-style-guide` | locate the plugin-managed Style Guide page |
 | `bricks-productivity/list-notes`, `create-note`, `update-note`, `delete-note` | builder notes at site / page / element / user scope |
 | `bricks-productivity/list-note-groups`, `save-note-groups` | the note group registry |
@@ -52,6 +54,9 @@ Each group is behind its own switch in **Settings → AI Tools → WordPress
 Abilities**, all off by default except reads. If an ability is missing, the group
 is off — say so rather than working around it.
 
+There is no BRXProd ability that writes page content. That is not an oversight;
+use Bricks'.
+
 ## Rule 3: establish which framework is in play before naming a token
 
 A BRXProd site runs on one of three token systems, and **the same concept has a
@@ -59,8 +64,12 @@ different variable name in each**. Guessing produces CSS that references a
 variable that does not exist, which resolves to nothing: the declaration is
 dropped, no error is raised, and the spacing or colour is simply absent.
 
-Read the variable list first (`bricks/list-global-variables`, or
-`bricks/get-design-context`) and identify the system by prefix:
+**`bricks-productivity/get-brxprod-context` answers this in one call** — it
+reports the detected framework, the variable prefix actually in force, and what
+BRXProd has installed. Prefer it over inferring the answer yourself.
+
+If you are inferring it, read the variable list (`bricks/list-global-variables`
+or `bricks/get-design-context`) and identify the system by prefix:
 
 | you see | system |
 |---|---|
@@ -102,8 +111,9 @@ variables.
 Three things to know before using them:
 
 - **Check they exist on this site.** All of it is opt-in — installed by Process
-  or the "Add BRXProd features" button. Read the class and variable lists rather
-  than assuming.
+  or the "Add BRXProd features" button. `get-brxprod-context` reports which of
+  the three class categories are installed and lists their class names, so there
+  is no need to assume.
 - **The two corner families work differently.** Outset paints its fillet with a
   pseudo-element, so an element has exactly **two** slots (`-horizontal` →
   `::before`, `-vertical` → `::after`) and a third pick silently renders nothing.
@@ -120,18 +130,18 @@ change, not a site change.
 
 ## Rule 5: the managed Style Guide page
 
-`bricks-productivity/update-page` **only works on a page carrying the plugin's
-Style Guide marker** and returns 403 for anything else. That is deliberate: it
-cannot be used to overwrite arbitrary pages. Do not look for a way around it —
-for any other page, use Bricks' own page abilities.
+`bricks-productivity/find-style-guide` locates it — it is identified by a marker
+in post meta, not by its title, so searching for a page called "Style Guide" is
+not the same question.
 
-Two consequences worth stating to the user before you touch it:
+**Edit it with Bricks' own page abilities**, like any other page. BRXProd no
+longer exposes a writer for it.
 
-- **The generator is authoritative.** Hand-edits to generated `sg{n}-*` classes
-  are replaced the next time the Style Guide is regenerated. The supported
-  workflow is to tune in the builder, then fold the change back into the plugin's
-  variant template.
-- **`update-page` replaces the content array wholesale.** There is no merge.
+One thing to tell the user before you touch it: **the generator is
+authoritative.** The plugin regenerates the page's `sg{n}-*` classes, so
+hand-edits to those are replaced on the next *Update Style Guide Page*. The
+supported workflow is to tune in the builder, then fold the change back into the
+plugin's variant template. Edits to your own content on that page are safe.
 
 ## Rule 6: notes
 
