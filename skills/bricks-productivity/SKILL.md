@@ -51,8 +51,17 @@ Reach for BRXProd abilities only for these:
 | `bricks-productivity/get-diagnostics` | server / WP / plugin diagnostics for support |
 
 Each group is behind its own switch in **Settings → AI Tools → WordPress
-Abilities**, all off by default except reads. If an ability is missing, the group
-is off — say so rather than working around it.
+Abilities**, all off by default except reads.
+
+**If an ability you expect is missing, it is almost certainly switched off
+rather than broken** — an unregistered ability and a nonexistent one look
+identical from outside. `get-brxprod-context` reports the group state: anything
+it lists under `abilityGroups.unavailable` is off, and it names the switch. Tell
+the user which one to turn on; do not work around it, and do not report a fault.
+
+The common case is `install-snippet`, which is off by default because it is the
+only ability that puts runnable code on the site. Notes is additionally Pro, so
+on a free licence its switch cannot help.
 
 There is no BRXProd ability that writes page content. That is not an oversight;
 use Bricks'.
