@@ -1,12 +1,25 @@
 ---
 name: brxprod
-description: House standards for building and styling on a Bricks site running the Bricks Productivity plugin (BRXProd). Use when writing CSS or applying classes on such a site, identifying which token framework it uses, applying BRXProd rails/corner/utility classes, working with the Style Guide page, or installing bundled snippets. Says what to delegate to Bricks' own abilities and what is genuinely this plugin's. For builder notes, use the brxprod-notes skill.
+description: House standards for building and styling on a Bricks site running the Bricks Productivity plugin (BRXProd). Use when writing CSS or applying classes on such a site, identifying which token framework it uses, applying BRXProd rails/corner/utility classes, working with the Style Guide page, deciding where JavaScript or PHP should live, or installing snippets. Says what to delegate to Bricks' own abilities and what is genuinely this plugin's. For builder notes, use the brxprod-notes skill.
 ---
 
 # Working on a BRXProd site
 
 This covers **how we work**, not how Bricks works. Bricks ships its own agent
 layer and that layer is the authority on Bricks itself.
+
+## Rule 0: read the site's own instructions first
+
+**Call `brxprod/get-design-instructions` before anything else.** It returns the
+house rules the site owner has written: which tokens to use, how classes and
+element labels are formed, which CSS practices are required, and where code is
+allowed to live. It comes back as Markdown, both joined (`instructions`) and
+split (`sections.general`, `.css`, `.code`).
+
+**Those rules outrank this file.** This skill describes how BRXProd sites work
+in general; that ability describes how *this* site works, and the owner can
+change it without anyone republishing a skill. Where the two disagree, the site
+wins.
 
 ## Rule 1: use Bricks' own abilities and skills first
 
@@ -43,9 +56,13 @@ Reach for BRXProd abilities only for these:
 
 | ability | for |
 |---|---|
-| `brxprod/get-context` | which token framework this site runs, and what BRXProd has installed — **call this first** |
+| `brxprod/get-design-instructions` | the site's own house rules — **call this first**, they outrank this file |
+| `brxprod/get-context` | which token framework this site runs, what BRXProd has installed, which code managers are present |
 | `brxprod/find-style-guide` | locate the plugin-managed Style Guide page |
-| `brxprod/list-snippets`, `install-snippet` | install a bundled snippet into Fluent Snippets |
+| `brxprod/render-frontend-html` | render an element as the FRONT END outputs it — Bricks' own render runs in builder mode |
+| `brxprod/get-site-js` | read the site-wide custom scripts before proposing more |
+| `brxprod/create-snippet` | store JavaScript or PHP you wrote, as a draft snippet |
+| `brxprod/list-snippets`, `install-snippet` | install one of the plugin's own bundled snippets |
 | `brxprod/get-diagnostics` | server / WP / plugin diagnostics for support |
 
 Each group is behind its own switch in **Settings → AI Tools → WordPress
@@ -57,8 +74,10 @@ identical from outside. `get-context` reports the group state: anything
 it lists under `abilityGroups.unavailable` is off, and it names the switch. Tell
 the user which one to turn on; do not work around it, and do not report a fault.
 
-The common case is `install-snippet`, which is off by default because it is the
-only ability that puts runnable code on the site. Notes is additionally Pro, so
+The common cases are `install-snippet` and `create-snippet`, both off by
+default because they put runnable code on the site — and they are **separate
+switches**, because installing something the plugin vetted and storing
+something you just wrote are not the same risk. Notes is additionally Pro, so
 on a free licence its switch cannot help.
 
 There is no BRXProd ability that writes page content. That is not an oversight;
@@ -155,20 +174,60 @@ hand-edits to those are replaced on the next *Update Style Guide Page*. The
 supported workflow is to tune in the builder, then fold the change back into the
 plugin's variant template. Edits to your own content on that page are safe.
 
-## Rule 6: snippets
+## Rule 6: where code goes
 
-`install-snippet` installs one of the **plugin's own bundled snippets** into
-Fluent Snippets, as a **draft**, in the BRXProd group. It cannot install
-arbitrary code — the source is read server-side by id.
+**Never put JavaScript or PHP in a Bricks Code element.** A Code element ties
+the script to one element on one page, runs wherever that element happens to be
+placed, and is invisible to anyone looking for the site's scripts.
 
-Tell the user it landed as a draft and needs activating. It requires
-`unfiltered_html`, and the whole snippets group is off by default.
+Use a **code manager**, so generated code lives apart from code the site owner
+wrote by hand and can be read, disabled or deleted as a unit.
+`brxprod/get-context` reports `codeManager` — every manager it found in
+`detected`, and whether you can write one yourself in `canCreateSnippet`.
+
+Then:
+
+1. **`canCreateSnippet` true** → `brxprod/create-snippet` with
+   `language: php | js | css | html`. It lands as a **draft** in the BRXProd
+   group.
+2. **Another manager installed** (WPCode, Code Snippets, WPCodeBox, Advanced
+   Scripts…) → that is a perfectly good home. Write the code and hand it over
+   for the user to add. Do not offer to install a different one.
+3. **None at all** → stop and ask: install Fluent Snippets, or, for JavaScript
+   only, use Bricks' Site/Page settings via the plugin's JavaScript Panel. PHP
+   has no fallback.
+
+**Fluent Snippets is preferred for one concrete reason** — it is the manager
+this plugin can write to directly, so code lands without a copy-paste step.
+That is convenience, not a judgement about the others.
+
+**Never activate a snippet, and never say you have.** `create-snippet` produces
+a draft and there is no ability that activates one. PHP runs on every request
+and a mistake takes the site down, so enabling it is the user's decision. Say
+where it is and what it does.
+
+`install-snippet` is the separate case: it installs one of the **plugin's own
+bundled snippets** by id, also as a draft in the BRXProd group. It cannot
+install arbitrary code — the source is read server-side.
+
+Both need `unfiltered_html`, and both groups are off by default.
+
+**You cannot write the JavaScript Panel's own fields.** Its block sits inside a
+marker fence in the user's field and splicing that fence is done in exactly one
+place, so nothing else can drift from it and clobber somebody's script. Read
+them with `brxprod/get-site-js`; to change them, hand the code over.
 
 ## Rule 7: say what you did not verify
 
-None of these abilities render a page. A write response is not proof the result
-looks right — Bricks' own guidance says the same, and it matters more here
-because BRXProd's rails and corner classes are geometric.
+**`brxprod/render-frontend-html` is the one thing that can show you real
+output.** Every Bricks render path runs in builder mode, which replaces the
+children of nestable elements (nav, dropdown, accordion, slider, tabs,
+offcanvas, back-to-top) with a placeholder — so Bricks' own render cannot show
+you what you just built inside one. Use ours to check.
+
+Beyond that, a write response is not proof the result looks right — Bricks' own
+guidance says the same, and it matters more here because BRXProd's rails and
+corner classes are geometric.
 
 When you finish, say plainly what you did not see, and point at what most needs a
 human eye. Do not describe a page you have not viewed as looking good.
