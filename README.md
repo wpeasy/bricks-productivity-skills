@@ -27,11 +27,19 @@ contract would drift on every Bricks release and would be worse than none. Rule 
 of the skill is to read Bricks' own guidance and load the relevant Bricks skill
 before writing anything; the rest covers only what the plugin adds.
 
+The precedence runs: **Bricks' own tooling** decides how a write happens, the
+**site's own design instructions** (written by its owner, and readable through
+`brxprod/get-design-instructions`) decide what to write, and the skill covers
+only what neither has already said. Two opposite starting sets ship with the
+plugin — one that keeps styling in CSS, one that requires everything to land in
+Bricks' own controls — so the skill tells an agent to read them rather than
+assume which applies.
+
 ## Skills
 
 | skill | covers |
 |---|---|
-| [`brxprod`](skills/brxprod/SKILL.md) | delegating to Bricks; identifying which token framework a site runs; BRXProd rails, corner and utility classes; the managed Style Guide page; bundled snippets |
+| [`brxprod`](skills/brxprod/SKILL.md) | delegating to Bricks; reading the site's own design instructions and following them; identifying which token framework a site runs; BRXProd rails, corner and utility classes; the managed Style Guide page; verifying front-end markup inside nestable elements; storing snippets |
 | [`brxprod-notes`](skills/brxprod-notes/SKILL.md) | builder notes — reading, adding, editing, ticking off and deleting them at site, page, element or personal scope, and managing note groups |
 
 **Why two and not one.** Notes is the only part of this plugin that Bricks has no

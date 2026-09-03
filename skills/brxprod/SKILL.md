@@ -1,6 +1,6 @@
 ---
 name: brxprod
-description: House standards for building and styling on a Bricks site running the Bricks Productivity plugin (BRXProd). Use when writing CSS or applying classes on such a site, identifying which token framework it uses, applying BRXProd rails/corner/utility classes, working with the Style Guide page, or installing bundled snippets. Says what to delegate to Bricks' own abilities and what is genuinely this plugin's. For builder notes, use the brxprod-notes skill.
+description: House standards for building and styling on a Bricks site running the Bricks Productivity plugin (BRXProd). Use when writing CSS or applying classes on such a site, reading the site's own design instructions, identifying which token framework it uses, applying BRXProd rails/corner/utility classes, working with the Style Guide page, verifying front-end markup inside nestable elements, or storing snippets. Says what to delegate to Bricks' own abilities and what is genuinely this plugin's. For builder notes, use the brxprod-notes skill.
 ---
 
 # Working on a BRXProd site
@@ -37,15 +37,48 @@ capably, and two tools that disagree about the same site is worse than one
 because you cannot tell which is authoritative. If you find them on an older
 install, do not use them.
 
-## Rule 2: what this plugin actually adds
+## Rule 2: the site's own design instructions outrank this file
+
+**Call `brxprod/get-design-instructions` early and follow what it returns.** It
+is the site owner's own house rules, written by them in Settings → AI Tools, in
+three sections: what to establish before building and how things are named, how
+CSS is written, and where code is allowed to live.
+
+Precedence, highest first:
+
+1. **Bricks' own tooling** decides *how* a write happens (Rule 1).
+2. **The site's design instructions** decide *what* to write.
+3. **This file** covers only what neither of those has already said.
+
+Two starting sets ship, and a site is on one of them unless the owner has edited
+it. They are **opposites**, so do not assume either:
+
+- **Code** — styling stays in CSS and never in Bricks' style controls; BEM
+  names; container queries rather than `@media`.
+- **Visual** — everything must land in Bricks' own controls; short `ai-`
+  prefixed class names; Bricks' breakpoints, never container queries. On such a
+  site the HTML/CSS import is expected to run with
+  `options.custom_css_policy: "forbid"`, which makes Bricks reject any candidate
+  needing a Code element or custom CSS. A `custom_css_forbidden` error there is
+  the policy working as intended: revise the source, and do not switch the
+  policy to `allow` without asking the owner.
+
+**Do not infer which one applies from how the site looks.** Read the
+instructions.
+
+## Rule 3: what this plugin actually adds
 
 Reach for BRXProd abilities only for these:
 
 | ability | for |
 |---|---|
 | `brxprod/get-context` | which token framework this site runs, and what BRXProd has installed — **call this first** |
+| `brxprod/get-design-instructions` | the site owner's own house rules — see Rule 2 |
+| `brxprod/render-frontend-html` | the real front-end markup for a branch, including the nestable children Bricks' own render hides |
 | `brxprod/find-style-guide` | locate the plugin-managed Style Guide page |
-| `brxprod/list-snippets`, `install-snippet` | install a bundled snippet into Fluent Snippets |
+| `brxprod/get-site-js` | the site-wide custom scripts already in Bricks' settings, so you extend rather than duplicate them |
+| `brxprod/list-snippets`, `install-snippet` | install one of the plugin's **bundled** snippets |
+| `brxprod/create-snippet` | store JavaScript or PHP **you wrote** as a draft snippet |
 | `brxprod/get-diagnostics` | server / WP / plugin diagnostics for support |
 
 Each group is behind its own switch in **Settings → AI Tools → WordPress
@@ -69,7 +102,7 @@ behind it (`list-notes`, `create-note`, `update-note`, `delete-note`,
 `list-note-groups`, `save-note-groups`). Nothing in this file is needed to use
 them: Bricks has no notes feature, so none of the delegation rules apply there.
 
-## Rule 3: establish which framework is in play before naming a token
+## Rule 4: establish which framework is in play before naming a token
 
 A BRXProd site runs on one of three token systems, and **the same concept has a
 different variable name in each**. Guessing produces CSS that references a
@@ -90,7 +123,7 @@ or `bricks/get-design-context`) and identify the system by prefix:
 | the same names under a user prefix (`--cf-space-m`) | Core Framework **with a prefix set** — follow whatever prefix is actually there |
 | neither | the site's own framework, or none |
 
-`brxp-*` is orthogonal — see Rule 4. Its presence tells you BRXProd features are
+`brxp-*` is orthogonal — see Rule 5. Its presence tells you BRXProd features are
 installed, not which framework the site uses. A site can have `brxw-*` and
 `brxp-*` together, which is the common case.
 
@@ -103,7 +136,7 @@ assume it is empty: third-party template libraries built for Core Framework
 reference the bare names, so a prefixed install and an unprefixed one are both
 normal. Read the actual names.
 
-## Rule 4: BRXProd's own classes and variables
+## Rule 5: BRXProd's own classes and variables
 
 Installed by the plugin, under fixed, readable category ids:
 
@@ -140,7 +173,7 @@ These are locked, plugin-owned classes. Hand-edits to their CSS are replaced on
 the next install or Process run — if a rule needs changing, that is a plugin
 change, not a site change.
 
-## Rule 5: the managed Style Guide page
+## Rule 6: the managed Style Guide page
 
 `brxprod/find-style-guide` locates it — it is identified by a marker
 in post meta, not by its title, so searching for a page called "Style Guide" is
@@ -155,18 +188,40 @@ hand-edits to those are replaced on the next *Update Style Guide Page*. The
 supported workflow is to tune in the builder, then fold the change back into the
 plugin's variant template. Edits to your own content on that page are safe.
 
-## Rule 6: snippets
+## Rule 7: snippets
 
-`install-snippet` installs one of the **plugin's own bundled snippets** into
-Fluent Snippets, as a **draft**, in the BRXProd group. It cannot install
-arbitrary code — the source is read server-side by id.
+Two abilities, and they are **not** the same risk:
 
-Tell the user it landed as a draft and needs activating. It requires
-`unfiltered_html`, and the whole snippets group is off by default.
+- **`install-snippet`** installs one of the plugin's own **bundled** snippets.
+  It cannot install arbitrary code — the source is read server-side by id, and
+  the caller sends only that id.
+- **`create-snippet`** stores **code you wrote**. This is the one that puts your
+  own output on the site, so hold it to a higher bar: say what it does and why
+  it is needed before you write it.
 
-## Rule 7: say what you did not verify
+Both land as a **draft** in the BRXProd group in Fluent Snippets, and neither can
+activate anything — that is deliberate, not a limitation to work around. PHP runs
+on every request and a mistake takes the site down, so enabling it is the owner's
+decision. Tell them where it is, what it does, and that it is inactive.
 
-None of these abilities render a page. A write response is not proof the result
+Both require `unfiltered_html` **and** `install_plugins` — the same pair Fluent
+Snippets demands of its own UI — and the snippets group is off by default.
+
+Where another code manager is already installed (WPCode, Code Snippets,
+WPCodeBox, Advanced Scripts), that is a perfectly good home: write the code and
+hand it over. Do not offer to install Fluent merely because you cannot write to
+theirs directly.
+
+## Rule 8: say what you did not verify
+
+**`brxprod/render-frontend-html` is the one ability here that does render**, and
+it exists precisely because Bricks' own render paths cannot do this job: they run
+in builder mode, which replaces the children of a nestable element with a
+placeholder. So for anything you built inside a Nav, an accordion, tabs, a slider
+or an off-canvas, Bricks' own verification shows you nothing, and this is the
+check that works. Use it there.
+
+Everything else is a write response, and a write response is not proof the result
 looks right — Bricks' own guidance says the same, and it matters more here
 because BRXProd's rails and corner classes are geometric.
 
