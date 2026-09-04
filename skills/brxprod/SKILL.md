@@ -16,10 +16,30 @@ element labels are formed, which CSS practices are required, and where code is
 allowed to live. It comes back as Markdown, both joined (`instructions`) and
 split (`sections.general`, `.css`, `.code`).
 
+**The response may carry additional sections the owner did not write** —
+`sections.rails`, `.corners`, `.grids` — describing this plugin's own layout
+systems. They are switched on per site and are **omitted entirely when the
+system they describe is not installed**, so their presence is itself the signal
+that the system is available here. Where one appears it is the authoritative
+account of that system; prefer it over anything below.
+
 **Those rules outrank this file.** This skill describes how BRXProd sites work
 in general; that ability describes how *this* site works, and the owner can
 change it without anyone republishing a skill. Where the two disagree, the site
 wins.
+
+**Two starting sets ship, and they are opposites**, so read rather than assume:
+
+- **Code** — styling stays in CSS and never in Bricks' style controls; BEM
+  names; container queries rather than `@media`.
+- **Visual** — everything must land in Bricks' own controls; short `ai-`
+  prefixed class names; Bricks' breakpoints, never container queries.
+
+On a visual site the HTML/CSS import is expected to run with
+`options.custom_css_policy: "forbid"`, which makes Bricks reject any candidate
+needing a Code element or custom CSS. A `custom_css_forbidden` error there is
+that policy working as intended: revise the source, and do not switch the
+policy to `allow` without asking the owner first.
 
 ## Rule 1: use Bricks' own abilities and skills first
 
@@ -139,6 +159,12 @@ Variables live under the `brxp-layout` category ("Design Vars"): the rails
 generated accessibility text colours (`--brxp-a11y-*-text`) and animation
 variables.
 
+**If `get-design-instructions` returned a `rails` or `corners` section, read
+that instead of this rule** — it is generated from the same source that installs
+the classes, so it cannot drift from them, whereas this file is a second account
+written by hand. What follows is the summary for when those blocks are switched
+off.
+
 Three things to know before using them:
 
 - **Check they exist on this site.** All of it is opt-in — installed by Process
@@ -210,7 +236,11 @@ where it is and what it does.
 bundled snippets** by id, also as a draft in the BRXProd group. It cannot
 install arbitrary code — the source is read server-side.
 
-Both need `unfiltered_html`, and both groups are off by default.
+Both need `unfiltered_html` **and** `install_plugins` — the same pair Fluent
+Snippets demands of its own UI — and both groups are off by default. On
+single-site WordPress an Editor holds `unfiltered_html` without
+`install_plugins`, so an Editor cannot write snippets through these abilities
+either.
 
 **You cannot write the JavaScript Panel's own fields.** Its block sits inside a
 marker fence in the user's field and splicing that fence is done in exactly one
