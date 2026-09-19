@@ -41,14 +41,18 @@ assume which applies.
 |---|---|
 | [`brxprod`](skills/brxprod/SKILL.md) | delegating to Bricks; reading the site's own design instructions and following them; identifying which token framework a site runs; BRXProd rails, corner and utility classes; the managed Style Guide page; verifying front-end markup inside nestable elements; storing snippets |
 | [`brxprod-notes`](skills/brxprod-notes/SKILL.md) | builder notes — reading, adding, editing, ticking off and deleting them at site, page, element or personal scope, and managing note groups |
+| [`brxprod-feedback`](skills/brxprod-feedback/SKILL.md) | the client-feedback desk — triaging what clients left on the live site: status, assignment, replies (client-visible or internal), draft sharing and page approval, review rounds, contributors and invites |
 
-**Why two and not one.** Notes is the only part of this plugin that Bricks has no
-equivalent for, so it needs none of the "defer to Bricks' own abilities" material
-that dominates the other file — which makes it genuinely self-contained rather
-than a slice with ragged edges. Splitting there also sharpens both skills'
-descriptions, and a skill is matched to a task by its description, so a vague one
-loads less reliably. Everything else is one job — building and styling on a
-BRXProd site — and stays together.
+**Why three and not one.** Notes and client feedback are the parts of this
+plugin that Bricks has no equivalent for, so they need none of the "defer to
+Bricks' own abilities" material that dominates the first file — which makes each
+genuinely self-contained rather than a slice with ragged edges. Notes and
+feedback are split from each other because they are different jobs with
+different authority: anyone who can edit a page can keep notes on it, while the
+feedback desk — replying to clients, inviting and removing them — is the team's.
+A skill is matched to a task by its description, and a description spanning
+both loads less reliably than two focused ones. Everything else is one job —
+building and styling on a BRXProd site — and stays together.
 
 ## Installing
 

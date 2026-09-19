@@ -1,6 +1,6 @@
 ---
 name: brxprod-notes
-description: Read, create, edit, tick off and delete Bricks builder notes on a site running the Bricks Productivity plugin (BRXProd), and triage client feedback left on the live site. Use when asked to review notes or feedback, add a note, mark notes done, tidy or reorganise notes, manage note groups, or change a feedback item's status, assign it or reply to it — at site, page, element or personal scope.
+description: Read, create, edit, tick off and delete Bricks builder notes on a site running the Bricks Productivity plugin (BRXProd). Use when asked to review notes, add a note, mark notes done, tidy or reorganise notes, or manage note groups — at site, page, element or personal scope. For client feedback (status, assignment, replies, rounds, contributors), use the brxprod-feedback skill.
 ---
 
 # BRXProd builder notes
@@ -74,39 +74,15 @@ already unambiguous.
 keep — omitted ones are removed. The two built-in groups are always restored, so
 they cannot be lost.
 
-## Client feedback is a note with a workflow
+## Client feedback is a note with a workflow — but not this skill's job
 
-Feedback a client leaves on the live site (a pin on an element, a page or site
-comment, a page approval) is stored as a note — the same rows, the same
-locations — with extra fields: a `#number`, a `status`, an `assignee`, a
-`visibility` (`client` or `internal`) and a threaded conversation. Those
-fields are **never** changed through `update-note`; they have their own
-abilities so a stale copy of a note can never silently revert a status.
-
-| ability | notes |
-|---|---|
-| `brxprod/list-feedback` | feedback items with status, assignee, number, thread size; filter by `postId`, `status[]`, `assignee`, `open`, `q`. Returns `assignees` — the team members an item can go to |
-| `brxprod/update-feedback-status` | `noteId` + `status`: `new`, `assigned`, `in_progress`, `awaiting_feedback`, `approved`, `closed` |
-| `brxprod/assign-feedback` | `noteId` + `userId` (`0` unassigns). A `new` item becomes `assigned` |
-| `brxprod/comment-feedback` | `noteId` + `body`; `internal: true` hides the reply from the client; `awaitClient: true` also moves it to `awaiting_feedback` |
-
-**`approved` and `closed` tick the note done; any other status un-ticks it.**
-`approved` is the client's answer — when the team has dealt with something
-and wants it off the board, use `closed`. `awaiting_feedback` is "we have done
-this, please check": pair it with a client-visible reply saying what changed.
-
-**Replies are client-visible by default.** A note that is internal stays
-internal whatever you ask; a client-visible thread accepts internal replies
-for the team's own record. Do not put anything in a client-visible reply that
-was said to you as internal.
-
-**These four need the feedback manage capability** (Administrator and Editor by
-default), not just edit rights on the page. A refusal here is that line, not a
-bug. Reads keep working on a lapsed licence; writes do not.
-
-`list-notes` at an element or page also returns feedback notes with the same
-fields, read-only — use it when the user is asking about a place rather than
-about the feedback queue.
+Feedback a client leaves on the live site is stored as a note at the same
+locations, so `list-notes` shows it — read-only, with its `#number`,
+`status`, `assignee` and `visibility`. Those fields are **never** changed
+through `update-note`; the `brxprod-feedback` skill and its abilities
+(`list-feedback`, `update-feedback-status`, `assign-feedback`,
+`comment-feedback` and the rest) own them. If the user is asking about the
+feedback queue rather than about a place, switch to that skill.
 
 ## Permissions are not bugs
 
