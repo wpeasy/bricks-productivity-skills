@@ -153,7 +153,7 @@ Installed by the plugin, under fixed, readable category ids:
 |---|---|
 | `brxp-layout-rails` | `brxp-rails`, `brxp-rail-content`, `brxp-rail-wide`, `brxp-rail-breakout`, `brxp-rail-layout`, `brxp-rail-full`, `brxp-gutter-x`, `brxp-gutter-left`, `brxp-gutter-right`, `brxp-has-bg-media`, `brxp-has-bg-media__media` |
 | `brxp-corners` | 16 classes — `brxp-outset-radius-{corner}-{horizontal\|vertical}` and `brxp-inverted-radius-{corner}-{horizontal\|vertical}` |
-| `brxp-utilities` | `brxp-line-clamp`, `brxp-line-clamp--2…6`, `brxp-list-none`, the zero-margin family (`brxp-m--0`, `brxp-mi--0`, `brxp-mb--0`, `brxp-mbs--0`, `brxp-mbe--0`, `brxp-mis--0`, `brxp-mie--0`) and its padding twin (`brxp-p--0`, `brxp-pi--0`, …) |
+| `brxp-utilities` | `brxp-line-clamp`, `brxp-line-clamp--2…6`, `brxp-list-none`, the zero-margin family (`brxp-m--0`, `brxp-mi--0`, `brxp-mb--0`, `brxp-mbs--0`, `brxp-mbe--0`, `brxp-mis--0`, `brxp-mie--0`) and its padding twin (`brxp-p--0`, `brxp-pi--0`, …), and the form colour schemes `brxp-form--dark` / `brxp-form--light` |
 
 Variables live under the `brxp-layout` category ("Design Vars"): the rails
 (`--brxp-page-gutter`, `--brxp-layout-width`, `--brxp-content-width`,
@@ -183,6 +183,14 @@ Three things to know before using them:
 - **There is no `--inverted-color`.** The inverted mask cuts a real hole showing
   the true parent, so there is nothing to fill. A value written there is read by
   nothing.
+
+**Style a Bricks Form with `brxp-form--dark` or `brxp-form--light`** rather
+than hand-writing field CSS. Put the class on the Form element (or a wrapper
+around the fields); its inputs, selects, choices, error messages and date-picker
+popup take that scheme. Pick the one that suits the section's background. To
+adjust it, set its public variables on the form or a parent, e.g.
+`--brxp-form--dark-field-background` or `--brxp-form--light-field-border-color`.
+Do not edit the class's own CSS (see below). Plugin 1.3.2 and later.
 
 These are locked, plugin-owned classes. Hand-edits to their CSS are replaced on
 the next install or Process run — if a rule needs changing, that is a plugin
