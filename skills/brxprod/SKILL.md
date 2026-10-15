@@ -1,6 +1,6 @@
 ---
 name: brxprod
-description: House standards for building and styling on a Bricks site running the Bricks Productivity plugin (BRXProd). Use when writing CSS or applying classes on such a site, identifying which token framework it uses, applying BRXProd rails/corner/utility classes, regenerating the a11y text colours after a palette change, working with the Style Guide page, deciding where JavaScript or PHP should live, or installing snippets. Says what to delegate to Bricks' own abilities and what is genuinely this plugin's. For builder notes, use the brxprod-notes skill.
+description: House standards for building and styling on a Bricks site running the Bricks Productivity plugin (BRXProd). Use when writing CSS or applying classes on such a site, identifying which token framework it uses, applying BRXProd rails/corner/utility classes, regenerating the a11y text colours after a palette change, working with the Style Guide page, deciding where JavaScript or PHP should live, installing snippets, or reading or changing the prompts the plugin's AI Completion uses (writing style, output language, global and page-specific instructions). Says what to delegate to Bricks' own abilities and what is genuinely this plugin's. For builder notes, use the brxprod-notes skill.
 ---
 
 # Working on a BRXProd site
@@ -85,6 +85,8 @@ Reach for BRXProd abilities only for these:
 | `brxprod/list-snippets`, `install-snippet` | install one of the plugin's own bundled snippets |
 | `brxprod/get-diagnostics` | server / WP / plugin diagnostics for support |
 | `brxprod/regenerate-a11y-colors` | recompute the `--brxp-a11y-*-text` variables after the site's colours change — see Rule 4 |
+| `brxprod/get-ai-prompts` | the prompts the plugin's AI Completion sends: writing style, output language, global and page-specific instructions — see Rule 7 |
+| `brxprod/update-global-ai-prompts`, `update-page-ai-prompt` | change those prompts — see Rule 7 |
 
 Each group is behind its own switch in **Settings → AI Tools → WordPress
 Abilities**, all off by default except reads. `regenerate-a11y-colors` is in no
@@ -98,7 +100,9 @@ it lists under `abilityGroups.unavailable` is off, and it names the switch. Tell
 the user which one to turn on; do not work around it, and do not report a fault.
 
 The common cases are `install-snippet` and `create-snippet`, both off by
-default because they put runnable code on the site — and they are **separate
+default because they put runnable code on the site, and the two AI-prompt
+writes (**Edit AI prompts**), off by default because they change what every AI
+completion on the site is told — and they are **separate
 switches**, because installing something the plugin vetted and storing
 something you just wrote are not the same risk. Notes is additionally Pro, so
 on a free licence its switch cannot help.
@@ -278,7 +282,42 @@ marker fence in the user's field and splicing that fence is done in exactly one
 place, so nothing else can drift from it and clobber somebody's script. Read
 them with `brxprod/get-site-js`; to change them, hand the code over.
 
-## Rule 7: say what you did not verify
+## Rule 7: the AI Completion prompts
+
+The plugin's AI Completion (content generated inside Bricks' inputs) sends the
+site's own prompts with every request: **Global Instructions**, then the
+**Page-Specific Instructions** of the page being edited, then the **Writing
+Style** and **Output Language**. These are the site owner's voice and audience
+for generated copy — read them before writing copy for the site yourself, too.
+
+- **`brxprod/get-ai-prompts`** returns the global three, the allowed style and
+  language values (`choices`), and — with `postId` — that page's instructions.
+  It is in the reads group.
+- **`brxprod/update-global-ai-prompts`** changes any of `writingStyle`,
+  `outputLanguage`, `globalInstructions`; fields you leave out are unchanged, and
+  each text field is replaced whole, not appended to. Style and language must be
+  one of the `choices` values. It needs `manage_options`, and **the change
+  applies to every user and every page** — read first, show the user what will
+  change, and confirm before writing.
+- **`brxprod/update-page-ai-prompt`** replaces one page's instructions
+  (`postId`, `pageInstructions`; an empty string clears them). It needs
+  permission to edit that page, and leaves the page's other AI context (URLs and
+  documents) as it is.
+
+The two writes are the **Edit AI prompts** group, off by default.
+
+**Providers are not yours to touch.** No ability reads or writes the AI
+providers, models or API keys. Every response carries `aiProviders.ready`, and
+when it is false a `notice` saying what needs enabling — a Pro licence, the AI
+Providers switch, an enabled provider with an API key. **Pass that notice on to
+the user** when you change a prompt: the write did succeed, but it will have no
+effect on completions until the providers are set up, which they do in the
+builder. It is not an error and does not block anything.
+
+Plugin 1.3.5 and later. Before that, Writing Style and Output Language were
+per user, so an older site may show different values to different accounts.
+
+## Rule 8: say what you did not verify
 
 **`brxprod/render-frontend-html` is the one thing that can show you real
 output.** Every Bricks render path runs in builder mode, which replaces the
