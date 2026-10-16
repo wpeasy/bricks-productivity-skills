@@ -1,6 +1,6 @@
 ---
 name: brxprod
-description: House standards for building and styling on a Bricks site running the Bricks Productivity plugin (BRXProd). Use when writing CSS or applying classes on such a site, identifying which token framework it uses, applying BRXProd rails/corner/utility classes, regenerating the a11y text colours after a palette change, working with the Style Guide page, deciding where JavaScript or PHP should live, installing snippets, or reading or changing the prompts the plugin's AI Completion uses (writing style, output language, global and page-specific instructions). Says what to delegate to Bricks' own abilities and what is genuinely this plugin's. For builder notes, use the brxprod-notes skill.
+description: House standards for building and styling on a Bricks site running the Bricks Productivity plugin (BRXProd). Use when writing CSS or applying classes on such a site, identifying which token framework it uses, applying BRXProd rails/corner/utility classes, painting panels with the Surface classes or re-theming a site (e.g. to dark) through the Surface colours, regenerating the a11y text colours after a palette change, working with the Style Guide page, deciding where JavaScript or PHP should live, installing snippets, or reading or changing the prompts the plugin's AI Completion uses (writing style, output language, global and page-specific instructions). Says what to delegate to Bricks' own abilities and what is genuinely this plugin's. For builder notes, use the brxprod-notes skill.
 ---
 
 # Working on a BRXProd site
@@ -87,6 +87,8 @@ Reach for BRXProd abilities only for these:
 | `brxprod/regenerate-a11y-colors` | recompute the `--brxp-a11y-*-text` variables after the site's colours change — see Rule 4 |
 | `brxprod/get-ai-prompts` | the prompts the plugin's AI Completion sends: writing style, output language, global and page-specific instructions — see Rule 7 |
 | `brxprod/update-global-ai-prompts`, `update-page-ai-prompt` | change those prompts — see Rule 7 |
+| `brxprod/get-surfaces` | the four Surface colour sets, whether their text and links reach 4.5:1, and each Theme Style's page colours — see Rule 4 |
+| `brxprod/set-surfaces` | re-point a Surface's background, text or link colour site-wide — see Rule 4 |
 
 Each group is behind its own switch in **Settings → AI Tools → WordPress
 Abilities**, all off by default except reads. `regenerate-a11y-colors` is in no
@@ -102,7 +104,8 @@ the user which one to turn on; do not work around it, and do not report a fault.
 The common cases are `install-snippet` and `create-snippet`, both off by
 default because they put runnable code on the site, and the two AI-prompt
 writes (**Edit AI prompts**), off by default because they change what every AI
-completion on the site is told — and they are **separate
+completion on the site is told, and `set-surfaces` (**Edit Surfaces**), off by
+default because it repaints every element using a Surface — and they are **separate
 switches**, because installing something the plugin vetted and storing
 something you just wrote are not the same risk. Notes is additionally Pro, so
 on a free licence its switch cannot help.
@@ -157,7 +160,7 @@ Installed by the plugin, under fixed, readable category ids:
 |---|---|
 | `brxp-layout-rails` | `brxp-rails`, `brxp-rail-content`, `brxp-rail-wide`, `brxp-rail-breakout`, `brxp-rail-layout`, `brxp-rail-full`, `brxp-gutter-x`, `brxp-gutter-left`, `brxp-gutter-right`, `brxp-has-bg-media`, `brxp-has-bg-media__media` |
 | `brxp-corners` | 16 classes — `brxp-outset-radius-{corner}-{horizontal\|vertical}` and `brxp-inverted-radius-{corner}-{horizontal\|vertical}` |
-| `brxp-utilities` | `brxp-line-clamp`, `brxp-line-clamp--2…6`, `brxp-list-none`, the zero-margin family (`brxp-m--0`, `brxp-mi--0`, `brxp-mb--0`, `brxp-mbs--0`, `brxp-mbe--0`, `brxp-mis--0`, `brxp-mie--0`) and its padding twin (`brxp-p--0`, `brxp-pi--0`, …), and the form colour schemes `brxp-form--dark` / `brxp-form--light` |
+| `brxp-utilities` | `brxp-line-clamp`, `brxp-line-clamp--2…6`, `brxp-list-none`, the zero-margin family (`brxp-m--0`, `brxp-mi--0`, `brxp-mb--0`, `brxp-mbs--0`, `brxp-mbe--0`, `brxp-mis--0`, `brxp-mie--0`) and its padding twin (`brxp-p--0`, `brxp-pi--0`, …), the form colour schemes `brxp-form--dark` / `brxp-form--light`, and the Surfaces `brxp-surface1`…`brxp-surface4` (1.3.6+) |
 
 Variables live under the `brxp-layout` category ("Design Vars"): the rails
 (`--brxp-page-gutter`, `--brxp-layout-width`, `--brxp-content-width`,
@@ -166,7 +169,7 @@ Variables live under the `brxp-layout` category ("Design Vars"): the rails
 generated accessibility text colours (`--brxp-a11y-*-text`) and animation
 variables.
 
-**If `get-design-instructions` returned a `rails` or `corners` section, read
+**If `get-design-instructions` returned a `rails`, `corners` or `surfaces` section, read
 that instead of this rule** — it is generated from the same source that installs
 the classes, so it cannot drift from them, whereas this file is a second account
 written by hand. What follows is the summary for when those blocks are switched
@@ -195,6 +198,51 @@ popup take that scheme. Pick the one that suits the section's background. To
 adjust it, set its public variables on the form or a parent, e.g.
 `--brxp-form--dark-field-background` or `--brxp-form--light-field-border-color`.
 Do not edit the class's own CSS (see below). Plugin 1.3.2 and later.
+
+**Paint a panel with a Surface class, never with a background plus a text
+colour.** `brxp-surface1` page / section, `brxp-surface2` raised card / panel,
+`brxp-surface3` inset well, `brxp-surface4` accent block. The class sets the
+background AND a readable text colour, makes headings inside follow it, colours
+links inside (Bricks buttons are left alone), and underlines links on surface 4.
+Inside one, use `var(--brxp-on-muted)` for captions and metadata and
+`var(--brxp-on-line)` for borders — never a fixed grey, which disappears on a
+dark Surface. A primary button on `brxp-surface4` is invisible (the Surface is
+the primary colour); use another style there.
+
+**Re-theme through the Surfaces, not element by element.** "Make the site
+dark" is a `brxprod/set-surfaces` call that re-points the twelve
+`--brxp-surface{1-4}-bg / -color / -link` variables — every element painted
+with a Surface follows. Point values at the site's own tokens (`var(--…)`), give
+each `-color` the a11y text variable for its new `-bg`
+(`var(--brxp-a11y-<token>-text)`), and fix anything the response lists under
+`failing` (most often a `-link`) before reporting done. Read them first with
+`get-surfaces`. The plugin never overwrites a Surface once installed, so your
+values stick. If `get-surfaces` lists them as `missing`, the site predates them:
+creating or updating the Style Guide page in the builder installs both the
+variables and the classes.
+
+**The page is not a Surface — move it too.** The page behind everything is
+the Theme Style's site background (`settings.general.siteBackground.color`)
+and body text colour (`settings.typography.typographyBody.color`).
+`set-surfaces` does not touch them, so a dark re-theme of the Surfaces alone
+leaves a light page around them. `get-surfaces` lists every Theme Style's page
+colours under `page`, with `followsSurface1` — only for a caller with
+`edit_theme_options` (Administrators by default); otherwise `page` is empty and
+`pageHidden` is true, so say you could not check the page rather than assume it
+follows. For any style that does not
+follow it, link it — once linked, the page follows every later re-theme:
+
+1. `bricks/get-theme-styles` for the style's `id` and `expectedOwnership`;
+2. `bricks/update-theme-style` with them and `settings`
+   `{"general":{"siteBackground":{"color":{"raw":"var(--brxp-surface1-bg)"}}},"typography":{"typographyBody":{"color":{"raw":"var(--brxp-surface1-color)"}}}}`.
+
+It is deep-merged, so the body font and background image are kept. Link the
+page to Surface 1 rather than giving it colours of its own, and include it in
+"done": a re-theme is not finished while `page` shows a style that does not
+follow. If `bricks/update-theme-style` is missing, Bricks' own abilities are off
+(its Abilities / MCP setting): tell the user to switch them on, or to press
+**Use Surface 1** in Design Variables → Surfaces — never edit the Theme Style
+another way.
 
 These are locked, plugin-owned classes. Hand-edits to their CSS are replaced on
 the next install or Process run — if a rule needs changing, that is a plugin

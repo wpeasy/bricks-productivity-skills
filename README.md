@@ -39,7 +39,7 @@ assume which applies.
 
 | skill | covers |
 |---|---|
-| [`brxprod`](skills/brxprod/SKILL.md) | delegating to Bricks; reading the site's own design instructions and following them; identifying which token framework a site runs; BRXProd rails, corner and utility classes; the managed Style Guide page; verifying front-end markup inside nestable elements; storing snippets; reading and changing the prompts the plugin's AI Completion uses |
+| [`brxprod`](skills/brxprod/SKILL.md) | delegating to Bricks; reading the site's own design instructions and following them; identifying which token framework a site runs; BRXProd rails, corner and utility classes; painting panels with the Surface classes and re-theming a site (e.g. to dark) through the Surface colours, page included; the managed Style Guide page; verifying front-end markup inside nestable elements; storing snippets; reading and changing the prompts the plugin's AI Completion uses |
 | [`brxprod-notes`](skills/brxprod-notes/SKILL.md) | builder notes — reading, adding, editing, ticking off and deleting them at site, page, element or personal scope, and managing note groups |
 | [`brxprod-feedback`](skills/brxprod-feedback/SKILL.md) | the client-feedback desk — triaging what clients left on the live site: status, assignment, replies (client-visible or internal), draft sharing and page approval, review rounds, contributors and invites |
 
@@ -77,7 +77,7 @@ Both skills assume the site can actually reach the abilities:
   WordPress the plugin registers nothing.
 - **Bricks Productivity**, with **Settings → AI Tools → WordPress Abilities**
   turned on. It ships **off**, and each group under it (reads, snippet
-  install, snippet create, AI prompt edits, notes, feedback) is its own switch.
+  install, snippet create, AI prompt edits, Surface edits, notes, feedback) is its own switch.
   Reads are on by default; every other group has to be enabled deliberately,
   and notes and feedback need Pro.
 - **Bricks 2.4+** for Bricks' own abilities, which the skill delegates to.
