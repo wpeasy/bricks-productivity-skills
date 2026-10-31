@@ -1,6 +1,6 @@
 ---
 name: brxprod
-description: House standards for building and styling on a Bricks site running the Bricks Productivity plugin (BRXProd). Use when writing CSS or applying classes on such a site, identifying which token framework it uses, applying BRXProd rails/corner/utility classes, painting panels with the Surface classes or re-theming a site (e.g. to dark) through the Surface colours, regenerating the a11y text colours after a palette change, working with the Style Guide page, deciding where JavaScript or PHP should live, installing snippets, or reading or changing the prompts the plugin's AI Completion uses (writing style, output language, global and page-specific instructions). Says what to delegate to Bricks' own abilities and what is genuinely this plugin's. For builder notes, use the brxprod-notes skill.
+description: House standards for building and styling on a Bricks site running the Bricks Productivity plugin (BRXProd). Use when writing CSS or applying classes on such a site, identifying which token framework it uses, applying BRXProd rails/corner/utility classes, painting panels with the Surface classes or re-theming a site (e.g. to dark) through the Surface colours, regenerating the a11y text colours after a palette change, working with the Style Guide page, deciding where JavaScript or PHP should live, installing snippets, adding GSAP animation effects (gsap.brxprod.com), or reading or changing the prompts the plugin's AI Completion uses (writing style, output language, global and page-specific instructions). Says what to delegate to Bricks' own abilities and what is genuinely this plugin's. For builder notes, use the brxprod-notes skill.
 ---
 
 # Working on a BRXProd site
@@ -83,6 +83,7 @@ Reach for BRXProd abilities only for these:
 | `brxprod/get-site-js` | read the site-wide custom scripts before proposing more |
 | `brxprod/create-snippet` | store JavaScript or PHP you wrote, as a draft snippet |
 | `brxprod/list-snippets`, `install-snippet` | install one of the plugin's own bundled snippets |
+| `brxprod/get-gsap-effects`, `install-gsap-effect` | find and install a GSAP effect from the gsap.brxprod.com library — see Rule 6 |
 | `brxprod/get-diagnostics` | server / WP / plugin diagnostics for support |
 | `brxprod/regenerate-a11y-colors` | recompute the `--brxp-a11y-*-text` variables after the site's colours change — see Rule 4 |
 | `brxprod/get-ai-prompts` | the prompts the plugin's AI Completion sends: writing style, output language, global and page-specific instructions — see Rule 7 |
@@ -101,7 +102,7 @@ identical from outside. `get-context` reports the group state: anything
 it lists under `abilityGroups.unavailable` is off, and it names the switch. Tell
 the user which one to turn on; do not work around it, and do not report a fault.
 
-The common cases are `install-snippet` and `create-snippet`, both off by
+The common cases are `install-snippet`, `install-gsap-effect` (same group as `install-snippet`) and `create-snippet`, both off by
 default because they put runnable code on the site, and the two AI-prompt
 writes (**Edit AI prompts**), off by default because they change what every AI
 completion on the site is told, and `set-surfaces` (**Edit Surfaces**), off by
@@ -329,6 +330,36 @@ either.
 marker fence in the user's field and splicing that fence is done in exactly one
 place, so nothing else can drift from it and clobber somebody's script. Read
 them with `brxprod/get-site-js`; to change them, hand the code over.
+
+## GSAP animation
+
+**Use the BRXProd GSAP effects library (gsap.brxprod.com); never write GSAP
+yourself and never paste library code into a generic snippet.** Both skip the
+named class, the per-effect init marker, the shared GSAP Loader and the plugin
+lines, so the result differs from an effect installed through the builder's
+own GSAP effects modal. The library is experimental, off by default per user,
+needs Fluent Snippets, and is a courtesy that BRXProd does not support. If an
+ability says it is switched off, tell the user to enable it (Settings,
+Features, GSAP Effects) and stop.
+
+Install an effect exactly as the modal does:
+
+1. `brxprod/get-gsap-effects` (filter by `category`: buttons, text, media,
+   svg), then again with the effect `id` for its target role, required inner
+   classes, options and claims. Check `claimConflicts` before stacking effects.
+2. `brxprod/install-gsap-effect`. It makes sure the loader is present and
+   published, switches on needed GSAP plugin lines and creates and publishes
+   the effect's own snippet. Idempotent. Never edit those snippets.
+3. With **Bricks' own abilities**, create the global class named exactly as the
+   install returned (`brxp-fx-<id lower case>`), in the category it returned
+   (`BRXProd Effects`), with the returned `css` as its custom CSS. The class is
+   the snippet's selector as well as its styling: do not rename or restyle it.
+4. Assign the class to the element and write any option the effect declares as
+   a custom attribute.
+5. Check it on the front end (`brxprod/render-frontend-html`) before saying it
+   works.
+
+Never fetch the library's code at runtime, and never load GSAP from elsewhere.
 
 ## Rule 7: the AI Completion prompts
 
