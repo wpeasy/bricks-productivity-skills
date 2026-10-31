@@ -355,7 +355,11 @@ Install an effect exactly as the modal does:
    (`BRXProd Effects`), with the returned `css` as its custom CSS. The class is
    the snippet's selector as well as its styling: do not rename or restyle it.
 4. Assign the class to the element and write any option the effect declares as
-   a custom attribute.
+   a custom attribute. Before adding a second effect to an element, compare the
+   two effects' `claims` against `claimConflicts` (a clash is a claim of one
+   listed against a claim of the other; by default a claim clashes with itself,
+   so two effects that both claim `transform` clash). **On a clash, stop and
+   ask the user. Never pick one yourself and never stack them silently.**
 5. Check it on the front end (`brxprod/render-frontend-html`) before saying it
    works.
 
